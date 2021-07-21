@@ -1,19 +1,22 @@
-image: ubuntu:latest
+image: registry.gitlab.com/pages/hugo/hugo_extended:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+test:
+  script:
+    - hugo
+  except:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 pages:
-  stage: deploy
   script:
-    - workDir=`pwd`
-    - apt-get update && apt-get install git wget gcc g++ -y
-    - cd /usr/local
-    - wget https://golang.org/dl/go1.16.6.linux-amd64.tar.gz && tar -zxvf go1.16.6.linux-amd64.tar.gz
-    - export PATH=$PATH:/usr/local/go/bin
-    - cd /usr/local/go/src && git clone https://github.com/gohugoio/hugo.git
-    - cd /usr/local/go/src/hugo && go install --tags extended
-    - cd $workDir/website && hugo --minify -e gitlab-pages
-    - mv $workDir/website/public $workDir/public
+    - hugo --minify -e gl-pages -s website
+    - mv website/public public
   artifacts:
     paths:
       - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
