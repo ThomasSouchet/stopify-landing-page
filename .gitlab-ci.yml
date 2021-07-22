@@ -24,7 +24,6 @@ pages:
 aws:
   script:
     - hugo --minify -e s3 -s website
-    - mv website/public public
   artifacts:
     paths:
       - public
