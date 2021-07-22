@@ -20,3 +20,15 @@ pages:
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+aws:
+  script:
+    - hugo --minify -e s3 -s website
+    - mv website/public public
+  artifacts:
+    paths:
+      - public
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
