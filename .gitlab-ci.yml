@@ -24,9 +24,6 @@ pages:
 aws:
   script:
     - hugo --minify -e s3 -s website
-  artifacts:
-    paths:
-      - public
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
