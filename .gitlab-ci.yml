@@ -1,12 +1,5 @@
 image: registry.gitlab.com/pages/hugo/hugo_extended:latest
 
-test:
-  script:
-    - hugo
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
 pages:
   script:
     - hugo --minify -e gl-pages -s website
