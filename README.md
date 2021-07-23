@@ -26,4 +26,4 @@ CTRL+C ou `docker-compose down`
 
 ### Changer la version d'hugo installée dans l'image Docker
 Dans le fichier "docker-image/_script/hugo.sh" et modifier la ligne contenant la variable HUGO_VERSION avec la valeur "0.85.0"
-Pour trouver la dernière version d'HuGo:https://github.com/gohugoio/hugo/tags
+Pour trouver la dernière version d'HuGo: https://github.com/gohugoio/hugo/tags
