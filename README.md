@@ -25,7 +25,8 @@ Un service nommé `dev_server` est défini dans le fichier docker-compose.yml.
 CTRL+C ou `docker-compose down`
 
 ### Changer la version d'hugo installée dans l'image Docker
-\\ À écrire \\
+Dans le fichier "docker-image/_script/hugo.sh" et modifier la ligne contenant la variable HUGO_VERSION avec la valeur "0.85.0".
+Pour trouver la dernière version d'HuGo: https://github.com/gohugoio/hugo/tags
 
 ## Procédure d'Intégration et Déploiement Continu sur GitHub Pages
 L'intégration et le déploiement continus sur `GitHub Pages` sont effectués via github actions.
@@ -38,7 +39,6 @@ Le fichier `.github/workflows/gh-pages.yml` définis les actions effectuées :
   - lance la commande `hugo --minify -e gh-pages -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gh-pages`
   - déploie le contenu du dossier website/public contenant les fichiers html (générés par la commande précédente) sur github pages
 
-//WIP// À faire :
 - faire une pull request pour merger cette branche dans main et adapter github actions en conséquence
 
 ### Vérification
