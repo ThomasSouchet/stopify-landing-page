@@ -32,11 +32,8 @@ Pour trouver la dernière version d'HuGo:https://github.com/gohugoio/hugo/tags
 L'intégration et le déploiement continus sur `GitLab Pages` sont effectués via une pipeline CI/CD.
 Le fichier `.gitlab-ci.yml` définis les actions effectuées :
 - utilisation d'une image hugo extended dernière version
-- définition d'une variable GIT_SUBMODULE_STRATEGY ayant une pour valeur `recursive`
-- définition d'un job nommé `test` pour tester hugo
 - définition d'un job nommé `pages` qui :
-  - lance la commande `hugo --minify -e gl-pages -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gl-pages`
-  - lance la commande `mv website/public public` pour créer le répertoire de déploiement du site
+  - lance la commande `hugo --minify -e gl-pages -s website -d ../website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gl-pages`
   - le contenu du dossier public contenant les fichiers html (générés par la commande précédente) est automatiquement déployé sur gitlab pages
   - définition d'un artifact pour le job avec pour path le répertoire `public`
   - affectation de la valeur de la variable `$CI_DEFAULT_BRANCH` (nom de la branche par défaut du projet) à la variable `$CI_COMMIT_BRANCH` (nom de  la branche de commit) uniquement quand le job tourne
