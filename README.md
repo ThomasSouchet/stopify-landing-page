@@ -38,6 +38,7 @@ Le fichier `.github/workflows/gh-pages.yml` définis les actions effectuées :
   - configure hugo dans la version définie via la variable `hugo-version`
   - lance la commande `hugo --minify -e gh-pages -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gh-pages`
   - déploie le contenu du dossier website/public contenant les fichiers html (générés par la commande précédente) sur github pages
+
 - faire une pull request pour merger cette branche dans main et adapter github actions en conséquence
 
 ### Vérification
@@ -62,3 +63,24 @@ Si vous voyez une erreur 404 "There isn't a GitHub Pages site here." il y a 2 pr
 #### Erreur d'affichages des images
 Si le FQDN GitHub Pages ne correspond pas à celui configuré comme `baseURL` dans hugo, il se peut que les images ne s'affichent pas correctement.
 Changer la propriété `baseURL` pour la valeur correspondant dans le fichier `website/config/gh-pages/config.yml`
+
+## Procédure d'Intégration et Déploiement Continu sur GitLab Pages
+L'intégration et le déploiement continus sur `GitLab Pages` sont effectués via une pipeline CI/CD.
+Le fichier `.gitlab-ci.yml` définis les actions effectuées :
+- utilisation d'une image hugo extended dernière version
+- définition d'une variable GIT_SUBMODULE_STRATEGY ayant une pour valeur `recursive`
+- définition d'un job nommé `test` pour tester hugo
+- définition d'un job nommé `pages` qui :
+  - lance la commande `hugo --minify -e gl-pages -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gl-pages`
+  - lance la commande `mv website/public public` pour créer le répertoire de déploiement du site
+  - le contenu du dossier public contenant les fichiers html (générés par la commande précédente) est automatiquement déployé sur gitlab pages
+  - définition d'un artifact pour le job avec pour path le répertoire `public`
+  - affectation de la valeur de la variable `$CI_DEFAULT_BRANCH` (nom de la branche par défaut du projet) à la variable `$CI_COMMIT_BRANCH` (nom de  la branche de commit) uniquement quand le job tourne
+- définition d'un job nommé `aws` qui :
+  - lance la commande `hugo --minify -e s3 -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `s3`
+  - lance la commande `hugo deploy --force --maxDeletes -1 --invalidateCDN -e s3 -s website` pour déployer le site sur AWS
+  - affectation de la valeur de la variable `$CI_DEFAULT_BRANCH` (nom de la branche par défaut du projet) à la variable `$CI_COMMIT_BRANCH` (nom de la branche de commit) uniquement quand le job tourne
+
+### Vérification
+Pour vérifier l'exécution du pipeline il faut client sur le menu "CI/CD => Pipelines" du dépôt sur gitlab.com.  
+Pour accéder au site il faut se rendre sur l'url `http://<votreid>.pages-simplon.akiros.school/stopify-landing-page/`.
