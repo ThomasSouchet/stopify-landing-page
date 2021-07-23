@@ -2,8 +2,7 @@ image: registry.gitlab.com/pages/hugo/hugo_extended:latest
 
 pages:
   script:
-    - hugo --minify -e gl-pages -s website
-    - mv website/public public
+    - hugo --minify -e gl-pages -s website -d public
   artifacts:
     paths:
       - public
