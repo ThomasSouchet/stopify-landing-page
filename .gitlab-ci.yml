@@ -9,12 +9,17 @@ pages:
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  except:
+    refs:
+      - main
 
 aws:
   script:
     - hugo --minify -e s3 -s website
     - hugo deploy --force --maxDeletes -1 --invalidateCDN -e s3 -s website
   only:
+    refs:
+      - main
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
