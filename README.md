@@ -25,41 +25,23 @@ Un service nommé `dev_server` est défini dans le fichier docker-compose.yml.
 CTRL+C ou `docker-compose down`
 
 ### Changer la version d'hugo installée dans l'image Docker
-\\ À écrire \\
+Dans le fichier "docker-image/_script/hugo.sh" et modifier la ligne contenant la variable HUGO_VERSION avec la valeur "0.85.0"
+Pour trouver la dernière version d'HuGo:https://github.com/gohugoio/hugo/tags
 
-## Procédure d'Intégration et Déploiement Continu sur GitHub Pages
-L'intégration et le déploiement continus sur `GitHub Pages` sont effectués via github actions.
-Le fichier `.github/workflows/gh-pages.yml` définis les actions effectuées :
-- déclenchement du pipeline lors d'un push sur la branche `ci-cd`
-- définition d'un job nommé `deploy` qui :
-  - est lancé sur un container unbuntu
-  - fait un git checkout
-  - configure hugo dans la version définie via la variable `hugo-version`
-  - lance la commande `hugo --minify -e gh-pages -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gh-pages`
-  - déploie le contenu du dossier website/public contenant les fichiers html (générés par la commande précédente) sur github pages
-
-//WIP// À faire :
-- faire une pull request pour merger cette branche dans main et adapter github actions en conséquence
+## Procédure d'Intégration et Déploiement Continu sur GitLab Pages
+L'intégration et le déploiement continus sur `GitLab Pages` sont effectués via une pipeline CI/CD.
+Le fichier `.gitlab-ci.yml` définis les actions effectuées :
+- utilisation d'une image hugo extended dernière version
+- définition d'un job nommé `pages` qui :
+  - lance la commande `hugo --minify -e gl-pages -s website -d ../website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `gl-pages`
+  - le contenu du dossier public contenant les fichiers html (générés par la commande précédente) est automatiquement déployé sur gitlab pages
+  - définition d'un artifact pour le job avec pour path le répertoire `public`
+  - affectation de la valeur de la variable `$CI_DEFAULT_BRANCH` (nom de la branche par défaut du projet) à la variable `$CI_COMMIT_BRANCH` (nom de  la branche de commit) uniquement quand le job tourne
+- définition d'un job nommé `aws` qui :
+  - lance la commande `hugo --minify -e s3 -s website` pour générer les fichiers html en précisant qu'il s'agit de l'environnement hugo `s3`
+  - lance la commande `hugo deploy --force --maxDeletes -1 --invalidateCDN -e s3 -s website` pour déployer le site sur AWS
+  - affectation de la valeur de la variable `$CI_DEFAULT_BRANCH` (nom de la branche par défaut du projet) à la variable `$CI_COMMIT_BRANCH` (nom de la branche de commit) uniquement quand le job tourne
 
 ### Vérification
-Pour vérifier l'exécution de GitHub Actions il faut client sur l'onglet "Actions" du dépôt sur github.com.  
-Pour accéder au site il faut se rendre sur l'url `https://<votreid>.github.io/stopify-landing-page/`.
-
-### Erreurs connues
-#### GitHub Actions ne se déclenche pas
-Il faut vérifier que la branche sur laquelle vous faites vos modification déclenche bien github actions.
-
-#### Github Actions n'effectue pas l'action `Deploy`
-Il faut vérifier que la référence qui déclenche l'etape `Deploy` de GitHub action correspond bien à la branche sur laquelle vous faites vos modification. 
-
-#### Erreur 404
-Si vous voyez une erreur 404 "There isn't a GitHub Pages site here." il y a 2 problèmes possible :
-- le déploiement sur GitHub Pages n'a pas été efféctué (voir ci-dessus)
-- la branche utilisée par GitHub Pages n'est pas paramétrée dans votre repository :
-  - cliquer sur `Settings` sur votre repository
-  - sélectionner la catégorie `Pages`
-  - dans `Source` séléctionner la branche `gh-pages` (dossier `/ (root)` et cliquer sur `Save`
-
-#### Erreur d'affichages des images
-Si le FQDN GitHub Pages ne correspond pas à celui configuré comme `baseURL` dans hugo, il se peut que les images ne s'affichent pas correctement.
-Changer la propriété `baseURL` pour la valeur correspondant dans le fichier `website/config/gh-pages/config.yml`
+Pour vérifier l'exécution du pipeline il faut client sur le menu "CI/CD => Pipelines" du dépôt sur gitlab.com.  
+Pour accéder au site il faut se rendre sur l'url `http://<votreid>.pages-simplon.akiros.school/stopify-landing-page/`.
