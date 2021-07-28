@@ -11,7 +11,6 @@ build_image:
     - if: $CI_COMMIT_BRANCH
 
 pages:
-  extends: build_image
   script:
     - hugo --minify -e gl-pages -s website -d ../public
   artifacts:
@@ -25,7 +24,6 @@ pages:
       - main
 
 aws:
-  extends: build_image
   script:
     - hugo --minify -e s3 -s website
     - hugo deploy --force --maxDeletes -1 --invalidateCDN -e s3 -s website
