@@ -1,14 +1,4 @@
-build_image:
-  stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/docker-image/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
-  rules:
-    - if: $CI_COMMIT_BRANCH
+image: registry.gitlab.com/pages/hugo/hugo_extended:latest
 
 pages:
   script:
@@ -16,16 +6,14 @@ pages:
   artifacts:
     paths:
       - public
-  except:
-    refs:
-      - main
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 aws:
   script:
     - hugo --minify -e s3 -s website
     - hugo deploy --force --maxDeletes -1 --invalidateCDN -e s3 -s website
   only:
-    refs:
-      - main
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
